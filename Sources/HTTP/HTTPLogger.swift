@@ -17,7 +17,10 @@ extension Data {
         } else {
             data = self
         }
-        return String(data: data, encoding: .utf8)
+        guard let prettyPrintedString = NSString(data: data, encoding: String.Encoding.utf8.rawValue) else {
+            return nil
+        }
+        return prettyPrintedString as String
     }
 }
 
