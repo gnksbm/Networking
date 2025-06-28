@@ -40,13 +40,33 @@ struct HTTPLogger: HTTPEventMonitor {
     
     func didRecieve(_ request: any Networking.HTTPRequest, httpURLResponse: Networking.HTTPResponse) {
         let urlRequest = try? request.urlRequest
+        let mimeType = httpURLResponse.httpURLResponse.mimeType?.lowercased() ?? ""
+        let responseData = httpURLResponse.data
+        
+        let encoding: String.Encoding = {
+            if let name = httpURLResponse.httpURLResponse.textEncodingName {
+                let cfEnc = CFStringConvertIANACharSetNameToEncoding(name as CFString)
+                let nsEnc = CFStringConvertEncodingToNSStringEncoding(cfEnc)
+                return String.Encoding(rawValue: nsEnc)
+            } else {
+                return .utf8
+            }
+        }()
+        
+        var bodyString: String?
+        if mimeType == "application/json" {
+            bodyString = responseData.prettyPrintedString
+        } else if mimeType.hasPrefix("text/") || mimeType.contains("xml") {
+            bodyString = String(data: responseData, encoding: encoding)
+        }
+        
         print(
             """
             ✅
             - URL: \(String(describing: urlRequest?.url?.absoluteString))
             - Method: \(String(describing: urlRequest?.httpMethod))
             - StatusCode: \(httpURLResponse.httpURLResponse.statusCode)
-            - Body: \(String(describing: httpURLResponse.data.prettyPrintedString))
+            - Body: \(String(describing: bodyString))
             """
         )
     }
