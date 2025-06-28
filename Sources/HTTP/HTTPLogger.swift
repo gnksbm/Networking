@@ -21,11 +21,12 @@ extension Data {
     }
 }
 
-struct HTTPLogger: EventMonitor {
+struct HTTPLogger: HTTPEventMonitor {
     func didRequest(_ request: any Networking.HTTPRequest) {
         let urlRequest = try? request.urlRequest
         print(
             """
+            🚀
             - URL: \(String(describing: urlRequest?.url?.absoluteString))
             - Method: \(String(describing: urlRequest?.httpMethod))
             - Header: \(String(describing: urlRequest?.allHTTPHeaderFields))
@@ -38,6 +39,7 @@ struct HTTPLogger: EventMonitor {
         let urlRequest = try? request.urlRequest
         print(
             """
+            ✅
             - URL: \(String(describing: urlRequest?.url?.absoluteString))
             - Method: \(String(describing: urlRequest?.httpMethod))
             - StatusCode: \(httpURLResponse.httpURLResponse.statusCode)
@@ -50,6 +52,7 @@ struct HTTPLogger: EventMonitor {
         let urlRequest = try? request.urlRequest
         print(
             """
+            ❌
             - URL: \(String(describing: urlRequest?.url?.absoluteString))
             - Method: \(String(describing: urlRequest?.httpMethod))
             - Error: \(error.localizedDescription)

@@ -16,6 +16,7 @@ public protocol HTTPRequest {
     var queries: [String: String] { get }
     var headers: [String: String] { get }
     var body: Data? { get }
+    var isMonitoringEnabled: Bool { get }
 }
 
 public extension HTTPRequest {
@@ -23,6 +24,7 @@ public extension HTTPRequest {
     var queries: [String: String] { [:] }
     var headers: [String: String] { [:] }
     var body: Data? { nil }
+    var isMonitoringEnabled: Bool { false }
 }
 
 extension HTTPRequest {

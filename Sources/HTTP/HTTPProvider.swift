@@ -8,16 +8,20 @@
 import Foundation
 
 public protocol HTTPProvider {
-    var eventMonitor: EventMonitor? { get }
+    var eventMonitor: HTTPEventMonitor? { get }
     
     func request<R: HTTPRequest>(_ request: R) async throws -> HTTPResponse
 }
 
+public extension HTTPProvider {
+    var eventMonitor: HTTPEventMonitor? { HTTPLogger() }
+}
+
 extension URLSession: HTTPProvider {
-    public var eventMonitor: EventMonitor? { nil }
-    
     public func request<R: HTTPRequest>(_ request: R) async throws -> HTTPResponse {
-        eventMonitor?.didRequest(request)
+        if request.isMonitoringEnabled {
+            eventMonitor?.didRequest(request)
+        }
         do {
             let urlRequest = try request.urlRequest
             let (data, response) = try await data(for: urlRequest)
@@ -25,10 +29,14 @@ extension URLSession: HTTPProvider {
                 throw URLError(.badServerResponse)
             }
             let httpResponse = HTTPResponse(data: data, httpURLResponse: httpURLResponse)
-            eventMonitor?.didRecieve(request, httpURLResponse: httpResponse)
+            if request.isMonitoringEnabled {
+                eventMonitor?.didRecieve(request, httpURLResponse: httpResponse)
+            }
             return httpResponse
         } catch {
-            eventMonitor?.didError(request, error: error)
+            if request.isMonitoringEnabled {
+                eventMonitor?.didError(request, error: error)
+            }
             throw error
         }
     }
