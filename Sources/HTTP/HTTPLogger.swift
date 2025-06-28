@@ -10,8 +10,8 @@ import Foundation
 extension Data {
     var prettyPrintedString: String? {
         let data: Data
-        if JSONSerialization.isValidJSONObject(self),
-           let object = try? JSONSerialization.jsonObject(with: self),
+        if let object = try? JSONSerialization.jsonObject(with: self),
+           JSONSerialization.isValidJSONObject(object),
             let _data = try? JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted, .withoutEscapingSlashes]) {
             data = _data
         } else {
