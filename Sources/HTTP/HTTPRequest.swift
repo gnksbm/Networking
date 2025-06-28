@@ -47,7 +47,7 @@ extension HTTPRequest {
         }
     }
     
-    var urlRequest: URLRequest {
+    public var urlRequest: URLRequest {
         get throws {
             let url = try url
             var urlRequest = URLRequest(url: url)
